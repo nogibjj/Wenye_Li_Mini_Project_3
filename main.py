@@ -17,9 +17,9 @@ def general_describe():
         description = describe_dataset()
         median_values = describe_median()
         file.write("# Dataset Statistics\n")
-        file.write(description.to_markdown())
+        file.write(description.to_pandas().to_markdown())
         file.write("\n## Median Values\n")
-        file.write(median_values.to_markdown())
+        file.write(median_values.to_pandas().to_markdown())
     return description
 
 

@@ -1,24 +1,29 @@
 """
     library file
 """
-import pandas as pd
+import polars as pl
 import matplotlib.pyplot as plt
 
 dataset_url = "https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/drug-use-by-age/drug-use-by-age.csv"
 
 def load_dataset():
-    return pd.read_csv(dataset_url)
+    return pl.read_csv(dataset_url)
 
 def describe_dataset():
-    # Return descriptive statistics of the dataset
-    return pd.read_csv(dataset_url).describe()
+    dataset = load_dataset()
+    return dataset.describe()
 
 def describe_median():
-    dataset = load_dataset().replace("-", 0)
-    median_values = dataset.iloc[:, 1:].median()
+    dataset = load_dataset().select(pl.all().exclude("age"))
+
+    dataset = dataset.with_columns([
+        pl.col(pl.Utf8).str.replace("-", "0").cast(pl.Float64)
+    ])
+
+    median_values = dataset.median()
+
     return median_values
 
-# Modify functions to save figures instead of just displaying them
 def create_histogram(save_path):
     dataset = load_dataset()
     plt.figure(figsize=(8, 6))
@@ -72,4 +77,4 @@ def create_bar_chart(save_path):
     plt.savefig(save_path)
     plt.close()
 
-# print(describe_median())
+print(describe_median())
